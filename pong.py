@@ -1,6 +1,8 @@
 import pygame
 import random
 
+def inverse(num):
+    return -num
 
 pygame.init()
 screen = pygame.display.set_mode((1920,1080))
@@ -46,6 +48,11 @@ while running:
         ball_speed_y = -ball_speed_y
     ball_pos.x += ball_speed_x * dt
     ball_pos.y += ball_speed_y * dt
+    # Ball hitbox
+    ball_hitbox = pygame.Rect(ball_pos.x - 10, ball_pos.y - 10, 20, 20)  # 20x20 bounding box
+    if ball_hitbox.colliderect(player1) or ball_hitbox.colliderect(player2):
+        ball_speed_x = -ball_speed_x
+    
     # Render
     pygame.draw.circle(screen, "black", ball_pos, 10)
     pygame.draw.rect(screen, "black", player1)
