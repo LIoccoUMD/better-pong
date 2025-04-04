@@ -40,6 +40,10 @@ while running:
     # Ball movement (fill this in)
     # Update ball_pos, check top/bottom bounce, reset if off left/right
     # Move the ball
+    if ball_pos.x < 5 or ball_pos.x > 1915:
+        ball_speed_x = -ball_speed_x
+    if ball_pos.y > 1075 or ball_pos.y < 5:
+        ball_speed_y = -ball_speed_y
     ball_pos.x += ball_speed_x * dt
     ball_pos.y += ball_speed_y * dt
     # Render
