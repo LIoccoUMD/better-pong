@@ -34,6 +34,11 @@ player2 = pygame.Rect(1870, screen.get_height() / 2 - 50, PADDLE_WIDTH, PADDLE_H
 paddle1_angle = 0
 paddle2_angle = 0
 
+# Initialize paddles for rotation
+paddle1_rotated = paddle1_base
+paddle2_rotated = paddle2_base
+
+
 # Game loop
 while running:
     for event in pygame.event.get():
