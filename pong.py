@@ -7,7 +7,7 @@ PADDLE_WIDTH = 20
 PADDLE_HEIGHT = 100
 PADDLE1_COLOR = (168, 127, 50)
 PADDLE2_COLOR = (106, 86, 168)
-SPIN_ACCELERATION = 0
+SPIN_ACCELERATION = 10
 
 # Initialize the game
 pygame.init()
@@ -32,12 +32,14 @@ paddle2_base.fill(PADDLE2_COLOR)
 paddle1_rect = pygame.Rect(50, screen.get_height() / 2 - 50, PADDLE_WIDTH, PADDLE_HEIGHT)
 paddle2_rect = pygame.Rect(1870, screen.get_height() / 2 - 50, PADDLE_WIDTH, PADDLE_HEIGHT)
 
-# Rotation angles
-paddle1_angle = 0
-paddle2_angle = 0
+
 # Spinning vars
 paddle1_spinning = False
 paddle2_spinning = False
+paddle1_spin_speed = 0  # Degrees per second 
+paddle2_spin_speed = 0  # Degrees per second 
+paddle2_angle = 0
+paddle1_angle = 0
 
 # Initialize paddles for rotation
 paddle1_rotated = paddle1_base
@@ -68,30 +70,47 @@ while running:
     paddle1_rect.clamp_ip(screen.get_rect())
     paddle2_rect.clamp_ip(screen.get_rect())
 
+# Spin paddles
+    if paddle1_spinning:
+        paddle1_spin_speed += SPIN_ACCELERATION * dt
+        paddle1_angle += paddle1_spin_speed * dt
+    
+    if paddle2_spinning:
+        paddle2_spin_speed += SPIN_ACCELERATION * dt
+        paddle2_angle += paddle2_spin_speed * dt
+
+    # Update paddle rotations and rectangles
+    paddle1_rotated = pygame.transform.rotate(paddle1_base, paddle1_angle)
+    paddle2_rotated = pygame.transform.rotate(paddle2_base, paddle2_angle)
+    paddle1_rect = paddle1_rotated.get_rect(center=paddle1_rect.center)
+    paddle2_rect = paddle2_rotated.get_rect(center=paddle2_rect.center)
+
     # Ball movement
     if ball_pos.y > 1080 - BALL_RADIUS or ball_pos.y < BALL_RADIUS:
         ball_speed_y = -ball_speed_y
     if ball_pos.x < 5 or ball_pos.x > 1915:
         ball_speed_x = -ball_speed_x
+        paddle1_spinning = False 
+        paddle2_spinning = False 
+        paddle1_spin_speed = 0  
+        paddle2_spin_speed = 0   
+
     ball_pos.x += ball_speed_x * dt
     ball_pos.y += ball_speed_y * dt
     ball_hitbox.center = (ball_pos.x, ball_pos.y)
 
-    # Update paddle rotations and rectangles
-    paddle1_rotated = pygame.transform.rotate(paddle1_base, paddle1_angle)
-    paddle2_rotated = pygame.transform.rotate(paddle2_base, paddle2_angle)
-    paddle1_rect_new = paddle1_rotated.get_rect(center=paddle1_rect.center)
-    paddle2_rect_new = paddle2_rotated.get_rect(center=paddle2_rect.center)
-
     # Check collisions
-    if ball_hitbox.colliderect(paddle1_rect_new):
+    if ball_hitbox.colliderect(paddle1_rect):
         ball_speed_x = -ball_speed_x
-    if ball_hitbox.colliderect(paddle2_rect_new):
+        paddle1_spinning = True
+        if paddle1_spin_speed == 0:
+            paddle1_spin_speed = 100
+            paddle1_rotated = pygame.transform.rotate(paddle1_base, paddle1_angle)
+    if ball_hitbox.colliderect(paddle2_rect):
         ball_speed_x = -ball_speed_x
-
-    # Update paddle rectangles
-    paddle1_rect = paddle1_rect_new
-    paddle2_rect = paddle2_rect_new
+        paddle2_spinning = True
+        if paddle2_spin_speed == 0:
+            paddle2_spin_speed = 100
 
     # Draw rotated paddles
     screen.blit(paddle1_rotated, paddle1_rect.topleft)
