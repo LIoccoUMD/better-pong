@@ -57,6 +57,8 @@ while running:
         player2.y -= 6
     if keys[pygame.K_DOWN]:
         player2.y += 6
+    if keys[pygame.K_SPACE]: # Auto-track player2
+        player2.y = ball_pos.y
     player1.clamp_ip(screen.get_rect())
     player2.clamp_ip(screen.get_rect())
     # Player 1: W/S
@@ -76,6 +78,7 @@ while running:
     if ball_hitbox.colliderect(player1):
         ball_speed_x = -ball_speed_x
         paddle1_angle += 30
+        
         paddle1_rotated = pygame.transform.rotate(paddle1_base, paddle1_angle)
     if ball_hitbox.colliderect(player2):
         ball_speed_x = -ball_speed_x
