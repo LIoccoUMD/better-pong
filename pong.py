@@ -7,6 +7,7 @@ PADDLE_WIDTH = 20
 PADDLE_HEIGHT = 100
 PADDLE1_COLOR = (168, 127, 50)
 PADDLE2_COLOR = (106, 86, 168)
+SPIN_ACCELERATION = 0
 
 # Initialize the game
 pygame.init()
@@ -34,6 +35,9 @@ paddle2_rect = pygame.Rect(1870, screen.get_height() / 2 - 50, PADDLE_WIDTH, PAD
 # Rotation angles
 paddle1_angle = 0
 paddle2_angle = 0
+# Spinning vars
+paddle1_spinning = False
+paddle2_spinning = False
 
 # Initialize paddles for rotation
 paddle1_rotated = paddle1_base
@@ -82,14 +86,8 @@ while running:
     # Check collisions
     if ball_hitbox.colliderect(paddle1_rect_new):
         ball_speed_x = -ball_speed_x
-        paddle1_angle += 30
-        paddle1_rotated = pygame.transform.rotate(paddle1_base, paddle1_angle)
-        paddle1_rect_new = paddle1_rotated.get_rect(center=paddle1_rect.center)
     if ball_hitbox.colliderect(paddle2_rect_new):
         ball_speed_x = -ball_speed_x
-        paddle2_angle += 30
-        paddle2_rotated = pygame.transform.rotate(paddle2_base, paddle2_angle)
-        paddle2_rect_new = paddle2_rotated.get_rect(center=paddle2_rect.center)
 
     # Update paddle rectangles
     paddle1_rect = paddle1_rect_new
