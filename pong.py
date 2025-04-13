@@ -37,6 +37,8 @@ paddle2_angle = 0
 # Initialize paddles for rotation
 paddle1_rotated = paddle1_base
 paddle2_rotated = paddle2_base
+paddle1_rect = paddle1_rotated.get_rect(center=player1.center)
+paddle2_rect = paddle2_rotated.get_rect(center=player2.center)
 
 
 # Game loop
@@ -50,17 +52,19 @@ while running:
     # Player movement
     keys = pygame.key.get_pressed()
     if keys[pygame.K_w]:
-        player1.y -= 6
+        paddle1_rect.y -= 6
     if keys[pygame.K_s]:
-        player1.y += 6
+        paddle1_rect.y += 6
     if keys[pygame.K_UP]:
-        player2.y -= 6
+        paddle2_rect.y -= 6
     if keys[pygame.K_DOWN]:
-        player2.y += 6
+        paddle2_rect.y += 6
+    if keys[pygame.K_LALT]: # Auto-track player2
+        paddle1_rect.y = ball_pos.y
     if keys[pygame.K_SPACE]: # Auto-track player2
-        player2.y = ball_pos.y
-    player1.clamp_ip(screen.get_rect())
-    player2.clamp_ip(screen.get_rect())
+        paddle2_rect.y = ball_pos.y
+    paddle1_rect.clamp_ip(screen.get_rect())
+    paddle2_rect.clamp_ip(screen.get_rect())
     # Player 1: W/S
     # Player 2: UP/DOWN
 
@@ -75,17 +79,14 @@ while running:
     ball_pos.y += ball_speed_y * dt
     # Ball hitbox
     ball_hitbox = pygame.Rect(ball_pos.x - BALL_RADIUS, ball_pos.y - BALL_RADIUS, BALL_RADIUS * 2, BALL_RADIUS * 2)  # 20x20 bounding box
-    if ball_hitbox.colliderect(player1):
+    if ball_hitbox.colliderect(paddle1_rect):
         ball_speed_x = -ball_speed_x
         paddle1_angle += 30
-        
-        paddle1_rotated = pygame.transform.rotate(paddle1_base, paddle1_angle)
-    if ball_hitbox.colliderect(player2):
+        # paddle1_rotated = pygame.transform.rotate(paddle1_base, paddle1_angle)
+    if ball_hitbox.colliderect(paddle2_rect):
         ball_speed_x = -ball_speed_x
         paddle2_angle += 30
-        paddle2_rotated = pygame.transform.rotate(paddle2_base, paddle2_angle)
-    paddle1_rect = paddle1_rotated.get_rect(center=player1.center)
-    paddle2_rect = paddle2_rotated.get_rect(center=player2.center)
+        # paddle2_rotated = pygame.transform.rotate(paddle2_base, paddle2_angle)
 
 
     # Draw rotated paddles
@@ -97,8 +98,8 @@ while running:
     
     # Render
     pygame.draw.circle(screen, "black", ball_pos, BALL_RADIUS)
-    pygame.draw.rect(screen, "black", player1)
-    pygame.draw.rect(screen, "black", player2)
+    # pygame.draw.rect(screen, "black", player1)
+    # pygame.draw.rect(screen, "black", player2)
 
     pygame.display.flip()
     dt = clock.tick(144) / 1000
